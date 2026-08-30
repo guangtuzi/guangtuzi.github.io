@@ -1,0 +1,15 @@
+<%
+  var tags = site.tags && site.tags.toArray ? site.tags.toArray() : [];
+  tags.sort(function (a, b) { return b.length - a.length; });
+%>
+<div class="shell narrow-shell taxonomy-page">
+  <header class="page-heading">
+    <span class="eyebrow">VOCABULARY · <%= tags.length %></span>
+    <h1><%= page.title || '全部标签' %></h1>
+    <p>用关键词穿过分类边界，重新发现内容之间的联系。</p>
+  </header>
+  <% if (page.content) { %><div class="post-content taxonomy-intro"><%- page.content %></div><% } %>
+  <div class="tag-cloud" aria-label="标签列表">
+    <% tags.forEach(function (tag) { %><a href="<%= url_for(tag.path) %>"><span>#</span><%= tag.name %><em><%= tag.length %></em></a><% }); %>
+  </div>
+</div>

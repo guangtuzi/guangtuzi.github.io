@@ -1,0 +1,34 @@
+{
+  "name": "guangtuzi-github-io",
+  "version": "1.0.0",
+  "private": true,
+  "description": "JasonZhuang‘s Blog, powered by Hexo and GitHub Pages.",
+  "scripts": {
+    "clean": "hexo clean",
+    "build": "hexo clean && hexo generate",
+    "serve": "hexo server",
+    "new": "hexo new",
+    "check": "hexo clean && hexo generate"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "hexo": {
+    "version": "8.1.2"
+  },
+  "dependencies": {
+    "hexo": "8.1.2",
+    "hexo-generator-archive": "2.0.0",
+    "hexo-generator-category": "2.0.0",
+    "hexo-generator-feed": "4.0.0",
+    "hexo-generator-index": "4.0.0",
+    "hexo-generator-sitemap": "3.0.1",
+    "hexo-generator-tag": "2.0.0",
+    "hexo-renderer-ejs": "2.0.0",
+    "hexo-renderer-marked": "7.0.1",
+    "hexo-server": "3.0.0"
+  },
+  "devDependencies": {
+    "hexo-cli": "4.3.2"
+  }
+}

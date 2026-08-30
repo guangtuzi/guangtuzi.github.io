@@ -1,0 +1,14 @@
+<section class="error-page shell narrow-shell">
+  <div class="error-code" aria-hidden="true">404</div>
+  <span class="eyebrow">ROUTE_NOT_FOUND</span>
+  <h1>这条路径没有留下内容。</h1>
+  <p>页面可能已经移动、链接可能拼错，或者它还没被写出来。</p>
+  <div class="error-terminal" aria-label="错误详情">
+    <code><span>$</span> resolve --path "<%= page.path || '/' %>"</code>
+    <code><span>!</span> no matching document found</code>
+  </div>
+  <div class="hero-actions">
+    <a class="button button-primary" href="<%= url_for('/') %>">返回首页 <span aria-hidden="true">→</span></a>
+    <a class="button button-quiet" href="<%= url_for('/archives/') %>">浏览归档</a>
+  </div>
+</section>

@@ -1,0 +1,108 @@
+<%
+  var english = is_english();
+  var profile = theme.profile || {};
+  var siteName = english ? (config.title_en || config.title) : config.title;
+  var profileName = english
+    ? (profile.name_en || config.author_en || siteName)
+    : (profile.name || config.author || siteName);
+  var hero = english ? (theme.hero_en || {}) : (theme.hero || {});
+  var display = theme.display || {};
+  var firstPage = !page.current || page.current === 1;
+  var allPosts = english
+    ? (site.pages && site.pages.toArray ? site.pages.toArray().filter(function (item) { return item.type === 'english-post'; }) : [])
+    : (site.posts && site.posts.toArray ? site.posts.toArray().filter(function (item) { return item.lang !== 'en'; }) : []);
+  allPosts.sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
+  var explicitFeatured = allPosts.filter(function (post) { return post.featured; });
+  var featuredPosts = (explicitFeatured.length ? explicitFeatured : allPosts).slice(0, display.featured_limit || 3);
+  var currentPosts = english ? allPosts : (page.posts && page.posts.toArray ? page.posts.toArray().filter(function (item) { return item.lang !== 'en'; }) : []);
+  var categories = english ? [] : (site.categories && site.categories.toArray ? site.categories.toArray() : []);
+  categories.sort(function (a, b) { return b.length - a.length; });
+  categories = categories.slice(0, display.category_limit || 8);
+%>
+<% if (firstPage) { %>
+  <section class="hero-section shell" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <span class="eyebrow"><%= hero.eyebrow || 'BUILD · LEARN · SHARE' %></span>
+      <h1 id="hero-title"><%= hero.title || siteName %></h1>
+      <p><%= hero.description || config.description %></p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="<%= url_for(hero.primary_link || '/archives/') %>"><%= hero.primary_label || '开始阅读' %><span aria-hidden="true">→</span></a>
+        <a class="button button-quiet" href="<%= url_for(hero.secondary_link || '/about/') %>"><%= hero.secondary_label || '了解作者' %></a>
+      </div>
+    </div>
+
+    <aside class="terminal-panel" aria-label="<%= english ? 'Site overview' : '站点概览' %>">
+      <div class="terminal-bar">
+        <span class="terminal-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>~/notes/overview</span>
+        <span>UTF-8</span>
+      </div>
+      <div class="terminal-body">
+        <div class="terminal-command"><span>$</span> whoami</div>
+        <p><strong><%= profileName %></strong><br><%= profile.role || 'Software Engineer' %></p>
+        <div class="terminal-command"><span>$</span> current_focus</div>
+        <p><%= profile.focus || 'Engineering · Systems · Learning' %><span class="cursor" aria-hidden="true"></span></p>
+      </div>
+      <dl class="site-stats">
+        <div><dt>POSTS</dt><dd><%= allPosts.length %></dd></div>
+        <% if (english) { %>
+          <div><dt>LANGUAGES</dt><dd>2</dd></div>
+          <div><dt>STATUS</dt><dd>●</dd></div>
+        <% } else { %>
+          <div><dt>CATEGORIES</dt><dd><%= site.categories ? site.categories.length : 0 %></dd></div>
+          <div><dt>TAGS</dt><dd><%= site.tags ? site.tags.length : 0 %></dd></div>
+        <% } %>
+      </dl>
+    </aside>
+  </section>
+
+  <% if (featuredPosts.length) { %>
+    <section class="section shell" aria-labelledby="featured-title">
+      <div class="section-heading">
+        <div><span class="section-index">01</span><h2 id="featured-title"><%= english ? 'Featured writing' : '精选文章' %></h2></div>
+        <p><%= english ? 'A good place to begin' : '值得从这里开始的长期内容' %></p>
+      </div>
+      <div class="featured-grid">
+        <% featuredPosts.forEach(function (post) { %>
+          <%- partial('_partial/post-card', { post: post, featured: true }) %>
+        <% }); %>
+      </div>
+    </section>
+  <% } %>
+<% } %>
+
+<section class="section shell" aria-labelledby="latest-title">
+  <div class="section-heading">
+    <div><span class="section-index"><%= firstPage ? '02' : String(page.current || 1).padStart(2, '0') %></span><h2 id="latest-title"><%= english ? (firstPage ? 'Latest posts' : 'Keep reading') : (firstPage ? '最新文章' : '继续阅读') %></h2></div>
+    <a href="<%= url_for(english ? '/en/archives/' : '/archives/') %>"><%= english ? 'View all' : '查看全部' %> <span aria-hidden="true">↗</span></a>
+  </div>
+  <% if (currentPosts.length) { %>
+    <div class="post-grid">
+      <% currentPosts.forEach(function (post) { %>
+        <%- partial('_partial/post-card', { post: post, featured: false }) %>
+      <% }); %>
+    </div>
+  <% } else { %>
+    <div class="empty-state"><span aria-hidden="true">{ }</span><h2><%= english ? 'The first post is on its way' : '第一篇文章正在路上' %></h2><p><%= english ? 'Writing begins with a question worth answering.' : '写作从一个值得回答的问题开始。' %></p></div>
+  <% } %>
+  <%- partial('_partial/pagination') %>
+</section>
+
+<% if (firstPage && categories.length) { %>
+  <section class="section shell category-section" aria-labelledby="category-title">
+    <div class="section-heading">
+      <div><span class="section-index">03</span><h2 id="category-title">探索分类</h2></div>
+      <a href="<%= url_for('/categories/') %>">所有分类 <span aria-hidden="true">↗</span></a>
+    </div>
+    <div class="category-grid">
+      <% categories.forEach(function (category, index) { %>
+        <a class="category-card" href="<%= url_for(category.path) %>">
+          <span class="category-number"><%= String(index + 1).padStart(2, '0') %></span>
+          <strong><%= category.name %></strong>
+          <span><%= category.length %> 篇文章</span>
+          <i aria-hidden="true">→</i>
+        </a>
+      <% }); %>
+    </div>
+  </section>
+<% } %>

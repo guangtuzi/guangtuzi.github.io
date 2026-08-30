@@ -1,0 +1,67 @@
+<%
+  var english = is_english();
+  var profile = theme.profile || {};
+  var siteName = english ? (config.title_en || config.title) : config.title;
+  var profileName = english
+    ? (profile.name_en || config.author_en || siteName)
+    : (profile.name || config.author || siteName);
+  var categories = page.categories && page.categories.toArray ? page.categories.toArray() : [];
+  var tags = page.tags && page.tags.toArray ? page.tags.toArray() : [];
+  var tocEnabled = !theme.post || theme.post.toc !== false;
+  var hasToc = tocEnabled && /<h[2-4][\s>]/i.test(page.content || '');
+  var showUpdated = !theme.post || theme.post.show_updated !== false;
+  var wasUpdated = page.updated && page.date && (new Date(page.updated).getTime() - new Date(page.date).getTime() > 86400000);
+%>
+<article class="article-page">
+  <header class="article-header shell narrow-shell">
+    <nav class="breadcrumbs" aria-label="<%= english ? 'Breadcrumb' : '面包屑' %>">
+      <a href="<%= url_for(english ? '/en/' : '/') %>"><%= english ? 'Home' : '首页' %></a><span aria-hidden="true">/</span>
+      <% if (categories.length) { %><a href="<%= url_for(categories[0].path) %>"><%= categories[0].name %></a><span aria-hidden="true">/</span><% } %>
+      <span aria-current="page"><%= english ? 'Article' : '文章' %></span>
+    </nav>
+    <% if (categories.length) { %><a class="article-kicker" href="<%= url_for(categories[0].path) %>"><%= categories[0].name %></a><% } else { %><span class="article-kicker">FIELD NOTE</span><% } %>
+    <h1><%= page.title %></h1>
+    <% if (page.description) { %><p class="article-deck"><%= page.description %></p><% } %>
+    <div class="article-meta">
+      <div><span><%= english ? 'Published' : '发布于' %></span><time datetime="<%= new Date(page.date).toISOString() %>"><%= format_date(page.date) %></time></div>
+      <% if (showUpdated && wasUpdated) { %><div><span><%= english ? 'Updated' : '更新于' %></span><time datetime="<%= new Date(page.updated).toISOString() %>"><%= format_date(page.updated) %></time></div><% } %>
+      <div><span><%= english ? 'Reading' : '阅读' %></span><strong><%= reading_time(page.content) %> <%= english ? 'min · ' : '分钟 · ' %><%= word_count(page.content) %> <%= english ? 'words' : '字' %></strong></div>
+    </div>
+  </header>
+
+  <div class="article-rule shell" aria-hidden="true"><span></span><i></i></div>
+
+  <div class="article-layout shell<%= hasToc ? ' has-toc' : '' %>">
+    <div class="post-content" data-post-content>
+      <%- page.content %>
+    </div>
+    <% if (hasToc) { %>
+      <aside class="toc-panel" aria-label="<%= english ? 'Table of contents' : '文章目录' %>">
+        <div class="toc-inner">
+          <span class="toc-title"><%= (theme.post && (english ? theme.post.toc_title_en : theme.post.toc_title)) || (english ? 'On this page' : '本文目录') %></span>
+          <%- toc(page.content, { list_number: false, min_depth: 2, max_depth: 3 }) %>
+        </div>
+      </aside>
+    <% } %>
+  </div>
+
+  <footer class="article-footer shell narrow-shell">
+    <% if (tags.length) { %>
+      <div class="tag-row" aria-label="<%= english ? 'Article tags' : '文章标签' %>">
+        <span>TAGGED</span>
+        <% tags.forEach(function (tag) { %><a href="<%= url_for(tag.path) %>">#<%= tag.name %></a><% }); %>
+      </div>
+    <% } %>
+    <div class="author-note">
+      <div class="author-monogram" aria-hidden="true"><%= (profileName || 'T').slice(0, 1) %></div>
+      <div><span>WRITTEN BY</span><strong><%= profileName %></strong><p><%= (english ? profile.bio_en : profile.bio) || config.description %></p></div>
+    </div>
+
+    <% if (page.prev || page.next) { %>
+      <nav class="post-navigation" aria-label="<%= english ? 'Adjacent articles' : '相邻文章' %>">
+        <% if (page.prev) { %><a href="<%= url_for(page.prev.path) %>" rel="prev"><span>← <%= english ? 'Previous' : '上一篇' %></span><strong><%= page.prev.title %></strong></a><% } else { %><span></span><% } %>
+        <% if (page.next) { %><a href="<%= url_for(page.next.path) %>" rel="next"><span><%= english ? 'Next' : '下一篇' %> →</span><strong><%= page.next.title %></strong></a><% } %>
+      </nav>
+    <% } %>
+  </footer>
+</article>

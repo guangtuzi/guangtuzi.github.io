@@ -1,0 +1,109 @@
+# Site
+title: 爆炸糖先生的博客
+title_en: "Mr. Poprocks' Blog"
+subtitle: 代码、架构与持续成长
+description: 记录软件工程、系统设计与开发实践，把复杂问题讲清楚。
+keywords:
+  - 软件工程
+  - 系统设计
+  - Web 开发
+  - Android
+  - 开源
+author: 爆炸糖先生的博客
+author_en: "Mr. Poprocks' Blog"
+language:
+  - zh-CN
+  - en
+timezone: Asia/Shanghai
+
+# URL — GitHub user Pages site
+url: https://www.poppinglab.com
+root: /
+permalink: posts/:year/:month/:title/
+permalink_defaults: null
+pretty_urls:
+  trailing_index: false
+  trailing_html: false
+
+# Directory
+source_dir: source
+public_dir: public
+tag_dir: tags
+archive_dir: archives
+category_dir: categories
+code_dir: downloads/code
+i18n_dir: :lang
+skip_render:
+  - privacy.html
+  - terms.html
+  - bebiwhy/**
+  - admin/**
+include:
+  - .nojekyll
+exclude: null
+ignore: null
+
+# Writing
+new_post_name: :title.md
+default_layout: post
+titlecase: false
+external_link:
+  enable: true
+  field: site
+  exclude: null
+filename_case: 1
+render_drafts: false
+post_asset_folder: false
+relative_link: false
+future: true
+syntax_highlighter: highlight.js
+highlight:
+  line_number: false
+  auto_detect: false
+  tab_replace: "  "
+  wrap: true
+  hljs: true
+
+# Home and archives
+index_generator:
+  path: ""
+  per_page: 8
+  order_by: -date
+archive_generator:
+  per_page: 12
+  yearly: true
+  monthly: false
+category_generator:
+  per_page: 12
+tag_generator:
+  per_page: 12
+per_page: 10
+pagination_dir: page
+
+# Metadata
+meta_generator: true
+updated_option: mtime
+date_format: YYYY-MM-DD
+time_format: HH:mm
+
+# Feed and sitemap
+feed:
+  type: atom
+  path: atom.xml
+  limit: 20
+  hub: null
+  content: true
+  content_limit: 280
+  content_limit_delim: " "
+  order_by: -date
+sitemap:
+  path: sitemap.xml
+  rel: false
+  tags: true
+  categories: true
+
+# Theme
+theme: terminal-canvas
+
+# Deployment is handled by .github/workflows/publish.yml from hexo-source.
+deploy: null

@@ -1,0 +1,17 @@
+<%
+  var categories = site.categories && site.categories.toArray ? site.categories.toArray() : [];
+  categories.sort(function (a, b) { return b.length - a.length; });
+%>
+<div class="shell narrow-shell taxonomy-page">
+  <header class="page-heading">
+    <span class="eyebrow">INDEX · <%= categories.length %></span>
+    <h1><%= page.title || '文章分类' %></h1>
+    <p>沿着主题脉络，找到一组彼此关联的文章。</p>
+  </header>
+  <% if (page.content) { %><div class="post-content taxonomy-intro"><%- page.content %></div><% } %>
+  <div class="taxonomy-list">
+    <% categories.forEach(function (category, index) { %>
+      <a href="<%= url_for(category.path) %>"><span><%= String(index + 1).padStart(2, '0') %></span><strong><%= category.name %></strong><em><%= category.length %> 篇</em><i aria-hidden="true">↗</i></a>
+    <% }); %>
+  </div>
+</div>

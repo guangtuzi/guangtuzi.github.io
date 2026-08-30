@@ -1,0 +1,57 @@
+name: Build Hexo and publish site
+
+on:
+  push:
+    branches:
+      - hexo-source
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hexo-pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Hexo source
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build
+
+      - name: Checkout published branch
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          path: _site-deploy
+
+      - name: Sync generated files
+        run: |
+          rsync -a --delete --exclude='.git/' public/ _site-deploy/
+          touch _site-deploy/.nojekyll
+
+      - name: Publish generated site
+        working-directory: _site-deploy
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+          if git diff --cached --quiet; then
+            echo "Generated site is already up to date."
+            exit 0
+          fi
+          git commit -m "chore(pages): publish ${GITHUB_SHA::7} [skip ci]"
+          git push origin main

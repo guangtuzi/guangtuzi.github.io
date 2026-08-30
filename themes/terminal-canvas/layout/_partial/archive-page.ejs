@@ -1,0 +1,48 @@
+<%
+  var english = is_english();
+  var archivePosts = english
+    ? (site.pages && site.pages.toArray ? site.pages.toArray().filter(function (item) { return item.type === 'english-post'; }) : [])
+    : (page.posts && page.posts.toArray ? page.posts.toArray().filter(function (item) { return item.lang !== 'en'; }) : []);
+  archivePosts.sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
+  var contextLabel = page.category ? 'CATEGORY' : (page.tag ? 'TAG' : 'ARCHIVE');
+  var contextTitle = page.category || page.tag || (english ? 'Article archive' : '文章归档');
+  var contextIntro = english
+    ? 'Browse accumulated ideas, experiments, and answers in chronological order.'
+    : (page.category
+      ? '归入「' + page.category + '」的文章与实践记录。'
+      : (page.tag ? '标记为「' + page.tag + '」的全部内容。' : '按时间回看一路积累的想法、实验与答案。'));
+  var lastYear = null;
+%>
+<div class="shell narrow-shell collection-page">
+  <header class="page-heading">
+    <span class="eyebrow"><%= contextLabel %> · <%= archivePosts.length %></span>
+    <h1><%= contextTitle %></h1>
+    <p><%= contextIntro %></p>
+  </header>
+
+  <% if (archivePosts.length) { %>
+    <div class="archive-stream">
+      <% archivePosts.forEach(function (post) { var year = new Date(post.date).getFullYear(); %>
+        <% if (year !== lastYear) { lastYear = year; %>
+          <div class="archive-year" aria-label="<%= year %><%= english ? '' : ' 年' %>"><span><%= year %></span></div>
+        <% } %>
+        <article class="archive-item">
+          <time datetime="<%= new Date(post.date).toISOString() %>"><%= String(new Date(post.date).getMonth() + 1).padStart(2, '0') %>.<%= String(new Date(post.date).getDate()).padStart(2, '0') %></time>
+          <div>
+            <h2><a href="<%= url_for(post.path) %>"><%= post.title %></a></h2>
+            <p><%= plain_excerpt(post, 96) %></p>
+          </div>
+          <span aria-hidden="true">↗</span>
+        </article>
+      <% }); %>
+    </div>
+  <% } else { %>
+    <div class="empty-state">
+      <span aria-hidden="true">{ }</span>
+      <h2><%= english ? 'Nothing here yet' : '这里还没有内容' %></h2>
+      <p><%= english ? 'New articles will appear here after publication.' : '新的文章会在发布后出现在这里。' %></p>
+    </div>
+  <% } %>
+
+  <%- partial('_partial/pagination') %>
+</div>

@@ -1,0 +1,12 @@
+<% if (page.total && page.total > 1) { %>
+  <% var english = is_english(); %>
+  <nav class="pagination" aria-label="<%= english ? 'Article pagination' : '文章分页' %>">
+    <div>
+      <% if (page.prev_link) { %><a class="page-link" href="<%= url_for(page.prev_link) %>" rel="prev">← <%= english ? 'Newer posts' : '较新文章' %></a><% } else { %><span></span><% } %>
+    </div>
+    <span class="page-count"><span class="sr-only"><%= english ? 'Page' : '当前第' %></span><%= page.current %> / <%= page.total %><span class="sr-only"><%= english ? '' : '页' %></span></span>
+    <div>
+      <% if (page.next_link) { %><a class="page-link" href="<%= url_for(page.next_link) %>" rel="next"><%= english ? 'Older posts' : '较早文章' %> →</a><% } %>
+    </div>
+  </nav>
+<% } %>

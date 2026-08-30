@@ -1,0 +1,19 @@
+<!doctype html>
+<html class="no-js" lang="<%= site_language() %>">
+  <head>
+    <%- partial('_partial/head') %>
+  </head>
+  <body class="site-body layout-<%= page.layout || 'page' %>" id="top">
+    <a class="skip-link" href="#main-content"><%= is_english() ? 'Skip to content' : '跳到正文' %></a>
+    <div class="reading-progress" data-reading-progress aria-hidden="true"></div>
+    <%- partial('_partial/header') %>
+
+    <main class="site-main" id="main-content" tabindex="-1">
+      <%- body %>
+    </main>
+
+    <%- partial('_partial/footer') %>
+    <div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
+    <%- js('js/theme.js') %>
+  </body>
+</html>
