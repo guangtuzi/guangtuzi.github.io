@@ -10,7 +10,7 @@
   var canonical = absolute_url(page.path || '/');
   var cover = page.cover ? absolute_url(page.cover) : '';
   var articlePage = is_post() || page.type === 'english-post';
-  var alternatePath = page.translation || (english ? '/' : '/en/');
+  var alternatePath = page.translation || (english ? '/zh/' : '/');
   if (!page.translation && !english && /^archives(?:\/|$)/i.test(String(page.path || ''))) alternatePath = '/en/archives/';
   var alternateUrl = absolute_url(alternatePath);
   var schema = {
@@ -39,7 +39,7 @@
 <link rel="canonical" href="<%= canonical %>">
 <link rel="alternate" hreflang="<%= english ? 'en' : 'zh-CN' %>" href="<%= canonical %>">
 <link rel="alternate" hreflang="<%= english ? 'zh-CN' : 'en' %>" href="<%= alternateUrl %>">
-<link rel="alternate" hreflang="x-default" href="<%= english ? alternateUrl : canonical %>">
+<link rel="alternate" hreflang="x-default" href="<%= english ? canonical : alternateUrl %>">
 <meta property="og:type" content="<%= articlePage ? 'article' : 'website' %>">
 <meta property="og:locale" content="<%= english ? 'en_US' : 'zh_CN' %>">
 <meta property="og:title" content="<%= title %>">
@@ -66,3 +66,4 @@
 </script>
 <%- css('css/style.css') %>
 <script type="application/ld+json"><%- JSON.stringify(schema).replace(/</g, '\\u003c') %></script>
+

@@ -15,7 +15,7 @@
 <article class="article-page">
   <header class="article-header shell narrow-shell">
     <nav class="breadcrumbs" aria-label="<%= english ? 'Breadcrumb' : '面包屑' %>">
-      <a href="<%= url_for(english ? '/en/' : '/') %>"><%= english ? 'Home' : '首页' %></a><span aria-hidden="true">/</span>
+      <a href="<%= url_for(english ? '/' : '/zh/') %>"><%= english ? 'Home' : '首页' %></a><span aria-hidden="true">/</span>
       <% if (categories.length) { %><a href="<%= url_for(categories[0].path) %>"><%= categories[0].name %></a><span aria-hidden="true">/</span><% } %>
       <span aria-current="page"><%= english ? 'Article' : '文章' %></span>
     </nav>
@@ -65,3 +65,4 @@
     <% } %>
   </footer>
 </article>
+

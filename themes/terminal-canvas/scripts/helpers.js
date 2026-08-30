@@ -27,8 +27,11 @@ function countWords(content) {
 }
 
 function localeFor(config, page) {
-  var language = page && page.lang;
-  if (!language && page && /^en(?:\/|$)/i.test(String(page.path || ''))) language = 'en';
+  var pagePath = page ? String(page.path || '') : '';
+  var language;
+  if (/^en(?:\/|$)/i.test(pagePath)) language = 'en';
+  else if (/^(?:zh|archives|categories|tags)(?:\/|$)/i.test(pagePath)) language = 'zh-CN';
+  else language = page && page.lang;
   if (!language) language = config && config.language;
   if (Array.isArray(language)) language = language[0];
   if (!language) return 'zh-CN';
@@ -80,7 +83,9 @@ hexo.extend.helper.register('plain_excerpt', function (post, limit) {
 
 hexo.extend.helper.register('meta_description', function (page) {
   var item = page || {};
-  var fallback = this.config.description || '技术、工程与创造力的长期记录。';
+  var fallback = this.is_english()
+    ? (this.config.description_en || this.config.description || 'Notes on technology, engineering, and creative work.')
+    : (this.config.description || '技术、工程与创造力的长期记录。');
   return stripMarkup(item.description || item.excerpt || fallback).slice(0, 180);
 });
 
@@ -114,3 +119,4 @@ hexo.extend.helper.register('site_language', function () {
 hexo.extend.helper.register('is_english', function () {
   return /^en(?:-|$)/i.test(localeFor(this.config, currentPage(this)));
 });
+

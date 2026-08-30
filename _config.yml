@@ -3,6 +3,7 @@ title: 爆炸糖先生的博客
 title_en: "Mr. Poprocks' Blog"
 subtitle: 代码、架构与持续成长
 description: 记录软件工程、系统设计与开发实践，把复杂问题讲清楚。
+description_en: Notes on software engineering, system design, and building reliable products.
 keywords:
   - 软件工程
   - 系统设计
@@ -12,8 +13,8 @@ keywords:
 author: 爆炸糖先生的博客
 author_en: "Mr. Poprocks' Blog"
 language:
-  - zh-CN
   - en
+  - zh-CN
 timezone: Asia/Shanghai
 
 # URL — GitHub user Pages site
@@ -107,3 +108,4 @@ theme: terminal-canvas
 
 # Deployment is handled by .github/workflows/publish.yml from hexo-source.
 deploy: null
+

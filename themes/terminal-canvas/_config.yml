@@ -30,7 +30,7 @@ hero_en:
 
 nav:
   - label: "首页"
-    path: "/"
+    path: "/zh/"
   - label: "归档"
     path: "/archives/"
   - label: "分类"
@@ -42,7 +42,7 @@ nav:
 
 nav_en:
   - label: "Home"
-    path: "/en/"
+    path: "/"
   - label: "Archive"
     path: "/en/archives/"
   - label: "About"
@@ -71,3 +71,4 @@ footer:
 
 favicon: "/favicon.svg"
 rss_path: "/atom.xml"
+

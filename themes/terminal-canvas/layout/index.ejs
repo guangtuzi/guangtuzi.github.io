@@ -14,7 +14,11 @@
   allPosts.sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
   var explicitFeatured = allPosts.filter(function (post) { return post.featured; });
   var featuredPosts = (explicitFeatured.length ? explicitFeatured : allPosts).slice(0, display.featured_limit || 3);
-  var currentPosts = english ? allPosts : (page.posts && page.posts.toArray ? page.posts.toArray().filter(function (item) { return item.lang !== 'en'; }) : []);
+  var currentPosts = english
+    ? allPosts
+    : (page.posts && page.posts.toArray
+      ? page.posts.toArray().filter(function (item) { return item.lang !== 'en'; })
+      : allPosts);
   var categories = english ? [] : (site.categories && site.categories.toArray ? site.categories.toArray() : []);
   categories.sort(function (a, b) { return b.length - a.length; });
   categories = categories.slice(0, display.category_limit || 8);
@@ -106,3 +110,4 @@
     </div>
   </section>
 <% } %>
+

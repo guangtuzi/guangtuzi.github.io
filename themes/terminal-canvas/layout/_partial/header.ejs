@@ -6,8 +6,8 @@
     ? (profile.name_en || config.title_en || config.author_en || config.title || 'Terminal Canvas')
     : (profile.name || config.title || config.author || 'Terminal Canvas');
   var brandRole = profile.role || 'Technical Notes';
-  var homePath = english ? '/en/' : '/';
-  var alternatePath = page.translation || (english ? '/' : '/en/');
+  var homePath = english ? '/' : '/zh/';
+  var alternatePath = page.translation || (english ? '/zh/' : '/');
   if (!page.translation && !english && /^archives(?:\/|$)/i.test(String(page.path || ''))) alternatePath = '/en/archives/';
 %>
 <header class="site-header" data-site-header>
@@ -38,3 +38,4 @@
     </nav>
   </div>
 </header>
+

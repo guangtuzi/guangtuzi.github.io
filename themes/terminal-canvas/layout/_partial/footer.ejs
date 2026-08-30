@@ -2,7 +2,7 @@
   var english = is_english();
   var socials = theme.social || [];
   var footer = theme.footer || {};
-  var homePath = english ? '/en/' : '/';
+  var homePath = english ? '/' : '/zh/';
   var siteName = english ? (config.title_en || config.title || 'Terminal Canvas') : (config.title || 'Terminal Canvas');
   var profileName = english
     ? ((theme.profile && theme.profile.name_en) || config.author_en || siteName)
@@ -28,3 +28,4 @@
     </div>
   </div>
 </footer>
+
