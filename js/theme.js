@@ -50,6 +50,10 @@
     if (label) label.textContent = english ? (open ? 'Close navigation' : 'Open navigation') : (open ? '关闭导航' : '打开导航');
   }
 
+  function menuIsOpen() {
+    return Boolean(navButton && nav && navButton.getAttribute('aria-expanded') === 'true');
+  }
+
   if (navButton && nav) {
     navButton.addEventListener('click', function () {
       setMenu(navButton.getAttribute('aria-expanded') !== 'true');
@@ -57,14 +61,18 @@
     nav.addEventListener('click', function (event) {
       if (event.target.closest('a')) setMenu(false);
     });
+    document.addEventListener('pointerdown', function (event) {
+      if (window.innerWidth > 1100 || !menuIsOpen()) return;
+      if (!nav.contains(event.target) && !navButton.contains(event.target)) setMenu(false);
+    });
     document.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape') {
+      if (event.key === 'Escape' && menuIsOpen()) {
         setMenu(false);
         navButton.focus();
       }
     });
     window.addEventListener('resize', function () {
-      if (window.innerWidth > 760) setMenu(false);
+      if (window.innerWidth > 1100) setMenu(false);
     });
   }
 
