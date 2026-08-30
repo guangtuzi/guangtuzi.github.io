@@ -1,0 +1,223 @@
+<!doctype html>
+<html class="no-js" lang="zh-CN">
+  <head>
+    
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f7f3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101512" media="(prefers-color-scheme: dark)">
+<title>让 Hexo 发布变得可复现：从本地命令到 GitHub Actions · 爆炸糖先生的博客</title>
+<meta name="description" content="不提交 public 目录，也不维护 gh-pages 分支；用锁文件和官方 Pages Actions 建立一条稳定、可审计的发布流水线。">
+<link rel="canonical" href="https://www.poppinglab.com/posts/2026/08/reproducible-hexo-deployment/">
+<link rel="alternate" hreflang="zh-CN" href="https://www.poppinglab.com/posts/2026/08/reproducible-hexo-deployment/">
+<link rel="alternate" hreflang="en" href="https://www.poppinglab.com/en/posts/reproducible-hexo-deployment/">
+<link rel="alternate" hreflang="x-default" href="https://www.poppinglab.com/posts/2026/08/reproducible-hexo-deployment/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:title" content="让 Hexo 发布变得可复现：从本地命令到 GitHub Actions · 爆炸糖先生的博客">
+<meta property="og:description" content="不提交 public 目录，也不维护 gh-pages 分支；用锁文件和官方 Pages Actions 建立一条稳定、可审计的发布流水线。">
+<meta property="og:url" content="https://www.poppinglab.com/posts/2026/08/reproducible-hexo-deployment/">
+<meta property="og:site_name" content="爆炸糖先生的博客">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="让 Hexo 发布变得可复现：从本地命令到 GitHub Actions · 爆炸糖先生的博客">
+<meta name="twitter:description" content="不提交 public 目录，也不维护 gh-pages 分支；用锁文件和官方 Pages Actions 建立一条稳定、可审计的发布流水线。">
+
+<link rel="icon" href="/favicon.svg">
+<link rel="alternate" type="application/atom+xml" title="爆炸糖先生的博客" href="/atom.xml">
+<script>
+  (function () {
+    var root = document.documentElement;
+    root.classList.remove('no-js');
+    root.classList.add('js');
+    try {
+      var saved = localStorage.getItem('terminal-canvas-theme');
+      if (saved === 'light' || saved === 'dark') root.dataset.theme = saved;
+    } catch (_) {}
+  }());
+</script>
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","name":"让 Hexo 发布变得可复现：从本地命令到 GitHub Actions · 爆炸糖先生的博客","headline":"让 Hexo 发布变得可复现：从本地命令到 GitHub Actions","description":"不提交 public 目录，也不维护 gh-pages 分支；用锁文件和官方 Pages Actions 建立一条稳定、可审计的发布流水线。","url":"https://www.poppinglab.com/posts/2026/08/reproducible-hexo-deployment/","inLanguage":"zh-CN","datePublished":"2026-08-27T11:30:00.000Z","dateModified":"2026-08-28T10:00:00.000Z","author":{"@type":"Person","name":"爆炸糖先生的博客"}}</script>
+
+  <meta name="generator" content="Hexo 8.1.2"></head>
+  <body class="site-body layout-post" id="top">
+    <a class="skip-link" href="#main-content">跳到正文</a>
+    <div class="reading-progress" data-reading-progress aria-hidden="true"></div>
+    
+<header class="site-header" data-site-header>
+  <div class="shell header-inner">
+    <a class="brand" href="/" aria-label="爆炸糖先生的博客，返回首页">
+      <span class="brand-mark" aria-hidden="true"><span>&gt;</span>_</span>
+      <span class="brand-copy">
+        <strong>爆炸糖先生的博客</strong>
+        <span>Software Engineer</span>
+      </span>
+    </a>
+
+    <div class="header-actions">
+      <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="切换配色" title="切换配色">
+        <span class="theme-icon" data-theme-icon aria-hidden="true">◐</span>
+      </button>
+      <button class="icon-button nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-navigation">
+        <span class="sr-only">打开导航</span>
+        <span class="menu-lines" aria-hidden="true"><i></i><i></i></span>
+      </button>
+    </div>
+
+    <nav class="site-nav" id="site-navigation" data-site-nav aria-label="主导航">
+      
+        <a href="/">首页</a>
+      
+        <a href="/archives/">归档</a>
+      
+        <a href="/categories/">分类</a>
+      
+        <a href="/tags/">标签</a>
+      
+        <a href="/about/">关于</a>
+      
+      <a class="language-switch" href="/en/posts/reproducible-hexo-deployment/" lang="en" hreflang="en">EN</a>
+    </nav>
+  </div>
+</header>
+
+
+    <main class="site-main" id="main-content" tabindex="-1">
+      
+<article class="article-page">
+  <header class="article-header shell narrow-shell">
+    <nav class="breadcrumbs" aria-label="面包屑">
+      <a href="/">首页</a><span aria-hidden="true">/</span>
+      <a href="/categories/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/">工程实践</a><span aria-hidden="true">/</span>
+      <span aria-current="page">文章</span>
+    </nav>
+    <a class="article-kicker" href="/categories/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/">工程实践</a>
+    <h1>让 Hexo 发布变得可复现：从本地命令到 GitHub Actions</h1>
+    <p class="article-deck">不提交 public 目录，也不维护 gh-pages 分支；用锁文件和官方 Pages Actions 建立一条稳定、可审计的发布流水线。</p>
+    <div class="article-meta">
+      <div><span>发布于</span><time datetime="2026-08-27T11:30:00.000Z">2026年8月27日</time></div>
+      
+      <div><span>阅读</span><strong>3 分钟 · 717 字</strong></div>
+    </div>
+  </header>
+
+  <div class="article-rule shell" aria-hidden="true"><span></span><i></i></div>
+
+  <div class="article-layout shell has-toc">
+    <div class="post-content" data-post-content>
+      <p>一个静态博客的部署不应该依赖“某台电脑上刚好能运行”的环境。理想状态是：任何人拿到仓库，都能用同一条命令得到相同结构的站点；每次发布都能追溯到一次明确的提交。</p>
+<p>这篇文章以 Hexo 和 GitHub Pages 为例，拆解一条足够简单、又适合长期维护的发布链路。</p>
+<span id="more"></span>
+
+<h2 id="先确定构建边界"><a href="#先确定构建边界" class="headerlink" title="先确定构建边界"></a>先确定构建边界</h2><p>仓库只保存三类东西：</p>
+<ul>
+<li>Markdown 内容与静态资源</li>
+<li>Hexo、主题和插件的配置</li>
+<li>依赖锁文件与 CI 工作流</li>
+</ul>
+<p>构建结果 <code>public/</code> 不进入 Git。它可以由源码重新生成，提交它只会制造重复历史和合并冲突。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs gitignore">node_modules/<br>public/<br>db.json<br></code></pre></td></tr></table></figure>
+
+<h2 id="锁定依赖，而不是锁定某台电脑"><a href="#锁定依赖，而不是锁定某台电脑" class="headerlink" title="锁定依赖，而不是锁定某台电脑"></a>锁定依赖，而不是锁定某台电脑</h2><p>本地第一次安装使用 <code>npm install</code>，并提交生成的 <code>package-lock.json</code>。CI 则使用：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">npm ci<br>npm run build<br></code></pre></td></tr></table></figure>
+
+<p><code>npm ci</code> 会严格按照锁文件安装依赖；如果 <code>package.json</code> 和锁文件不一致，它会直接失败。这种失败很有价值，因为它把不一致暴露在发布之前。</p>
+<p><code>package.json</code> 里只需要保留一条清晰的构建入口：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;scripts&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;build&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;hexo clean &amp;&amp; hexo generate&quot;</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>先清理旧产物，可以避免被 Hexo 缓存或已经删除的页面干扰结果。</p>
+<h2 id="让-Actions-只做三件事"><a href="#让-Actions-只做三件事" class="headerlink" title="让 Actions 只做三件事"></a>让 Actions 只做三件事</h2><p>一条易于理解的流水线通常比“聪明”的流水线更可靠：</p>
+<ol>
+<li>安装锁定的依赖；</li>
+<li>生成 <code>public/</code>；</li>
+<li>将它作为 Pages artifact 部署。</li>
+</ol>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><code class="hljs yaml"><span class="hljs-bullet">-</span> <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/setup-node@v7</span><br>  <span class="hljs-attr">with:</span><br>    <span class="hljs-attr">node-version:</span> <span class="hljs-number">24</span><br>    <span class="hljs-attr">cache:</span> <span class="hljs-string">npm</span><br><span class="hljs-bullet">-</span> <span class="hljs-attr">run:</span> <span class="hljs-string">npm</span> <span class="hljs-string">ci</span><br><span class="hljs-bullet">-</span> <span class="hljs-attr">run:</span> <span class="hljs-string">npm</span> <span class="hljs-string">run</span> <span class="hljs-string">build</span><br><span class="hljs-bullet">-</span> <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/upload-pages-artifact@v5</span><br>  <span class="hljs-attr">with:</span><br>    <span class="hljs-attr">path:</span> <span class="hljs-string">./public</span><br></code></pre></td></tr></table></figure>
+
+<p>部署任务使用 GitHub 提供的短期身份令牌，不需要在仓库里保存个人访问令牌，也不需要额外维护 <code>gh-pages</code> 分支。</p>
+<h2 id="配置最常见的错误：root"><a href="#配置最常见的错误：root" class="headerlink" title="配置最常见的错误：root"></a>配置最常见的错误：<code>root</code></h2><p>GitHub Pages 有两种常见地址：</p>
+<ul>
+<li>用户站点：<code>https://user.github.io/</code>，对应 <code>root: /</code></li>
+<li>项目站点：<code>https://user.github.io/repository/</code>，对应 <code>root: /repository/</code></li>
+</ul>
+<p>如果 <code>root</code> 写错，HTML 往往能打开，但 CSS、JavaScript 和文章链接会全部指向错误位置。主题中的静态资源应该统一经过 Hexo 的 <code>url_for()</code> 处理，而不是手写绝对路径。</p>
+<h2 id="发布前做一个最小验证"><a href="#发布前做一个最小验证" class="headerlink" title="发布前做一个最小验证"></a>发布前做一个最小验证</h2><p>本地执行构建后，至少检查：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><code class="hljs bash">npm run build<br>npx hexo server<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>首页、文章页和 404 页是否生成；</li>
+<li>CSS、JavaScript、favicon 是否返回 200；</li>
+<li><code>sitemap.xml</code> 和 <code>atom.xml</code> 是否存在；</li>
+<li>页面内是否残留本机路径或开发地址；</li>
+<li>移动端菜单、深浅色切换和代码复制是否可用。</li>
+</ul>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>可复现部署的核心不是堆叠工具，而是缩小隐含状态：用锁文件固定依赖，用单一命令定义构建，用短期令牌完成部署，并让生成结果随时可以丢弃和重建。</p>
+<p>当发布流程足够无聊，写作者才可以把注意力还给内容。</p>
+
+    </div>
+    
+      <aside class="toc-panel" aria-label="文章目录">
+        <div class="toc-inner">
+          <span class="toc-title">本文目录</span>
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E7%A1%AE%E5%AE%9A%E6%9E%84%E5%BB%BA%E8%BE%B9%E7%95%8C"><span class="toc-text">先确定构建边界</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%94%81%E5%AE%9A%E4%BE%9D%E8%B5%96%EF%BC%8C%E8%80%8C%E4%B8%8D%E6%98%AF%E9%94%81%E5%AE%9A%E6%9F%90%E5%8F%B0%E7%94%B5%E8%84%91"><span class="toc-text">锁定依赖，而不是锁定某台电脑</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%A9-Actions-%E5%8F%AA%E5%81%9A%E4%B8%89%E4%BB%B6%E4%BA%8B"><span class="toc-text">让 Actions 只做三件事</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%9C%80%E5%B8%B8%E8%A7%81%E7%9A%84%E9%94%99%E8%AF%AF%EF%BC%9Aroot"><span class="toc-text">配置最常见的错误：root</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%91%E5%B8%83%E5%89%8D%E5%81%9A%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F%E9%AA%8C%E8%AF%81"><span class="toc-text">发布前做一个最小验证</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E8%AE%BA"><span class="toc-text">结论</span></a></li></ol>
+        </div>
+      </aside>
+    
+  </div>
+
+  <footer class="article-footer shell narrow-shell">
+    
+      <div class="tag-row" aria-label="文章标签">
+        <span>TAGGED</span>
+        <a href="/tags/hexo/">#Hexo</a><a href="/tags/github-actions/">#GitHub Actions</a><a href="/tags/ci-cd/">#CI/CD</a>
+      </div>
+    
+    <div class="author-note">
+      <div class="author-monogram" aria-hidden="true">爆</div>
+      <div><span>WRITTEN BY</span><strong>爆炸糖先生的博客</strong><p>记录工程实践、系统设计与持续学习。</p></div>
+    </div>
+
+    
+      <nav class="post-navigation" aria-label="相邻文章">
+        <a href="/posts/2026/08/hello-world/" rel="prev"><span>← 上一篇</span><strong>从这里开始：一份技术博客的自我说明</strong></a>
+        <a href="/posts/2026/08/debugging-with-evidence/" rel="next"><span>下一篇 →</span><strong>用证据驱动排障：从“可能是”到可验证的结论</strong></a>
+      </nav>
+    
+  </footer>
+</article>
+
+    </main>
+
+    
+<footer class="site-footer">
+  <div class="shell footer-grid">
+    <div>
+      <a class="footer-brand" href="/">爆炸糖先生的博客</a>
+      <p>Built with Hexo · Ideas stay in motion.</p>
+    </div>
+    
+      <nav class="social-links" aria-label="社交链接">
+        
+          <a href="https://github.com/guangtuzi" target="_blank" rel="me noopener noreferrer">GitHub<span aria-hidden="true">↗</span></a>
+        
+          <a href="mailto:guangtuzi@gmail.com">Email<span aria-hidden="true">↗</span></a>
+        
+      </nav>
+    
+    <div class="footer-meta">
+      <span>© 2026 爆炸糖先生的博客</span>
+      <span class="legal-links">BebiWhy: <a href="/privacy.html">隐私</a><i aria-hidden="true">/</i><a href="/terms.html">条款</a></span>
+      <a href="#top" data-back-top>回到顶部 ↑</a>
+    </div>
+  </div>
+</footer>
+
+    <div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
+    
+<script src="/js/theme.js"></script>
+
+  </body>
+</html>

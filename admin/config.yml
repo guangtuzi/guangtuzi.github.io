@@ -1,0 +1,200 @@
+backend:
+  name: github
+  repo: guangtuzi/guangtuzi.github.io
+  branch: hexo-source
+  auth_methods:
+    - token
+
+site_url: https://www.poppinglab.com
+display_url: https://www.poppinglab.com
+app_title: 爆炸糖先生的博客管理后台
+logo:
+  src: /favicon.svg
+  show_in_header: true
+
+media_folder: source/images/uploads
+public_folder: /images/uploads
+
+slug:
+  encoding: unicode
+  clean_accents: false
+  sanitize_replacement: "-"
+  trim: true
+  lowercase: true
+  timezone: local
+
+output:
+  omit_empty_optional_fields: true
+
+collections:
+  - name: chinese_posts
+    label: 中文文章
+    label_singular: 中文文章
+    description: 创建和维护博客中文文章；保存后会触发 GitHub Actions 自动发布。
+    icon: article
+    folder: source/_posts
+    extension: md
+    format: yaml-frontmatter
+    identifier_field: title
+    slug: "{{slug}}"
+    preview_path: "/posts/{{year}}/{{month}}/{{slug}}/"
+    sortable_fields:
+      - date
+      - title
+      - updated
+    summary: "{{title}} · {{date}}"
+    fields:
+      - name: title
+        label: 标题
+        widget: string
+      - name: lang
+        label: 语言
+        widget: hidden
+        default: zh-CN
+      - name: translation
+        label: 英文版本路径
+        widget: string
+        required: false
+        hint: 例如 /en/posts/my-article/；没有英文版本时可以留空。
+      - name: date
+        label: 发布时间
+        widget: datetime
+        default: "{{now}}"
+        format: YYYY-MM-DD HH:mm:ss
+      - name: updated
+        label: 更新时间
+        widget: datetime
+        required: false
+        format: YYYY-MM-DD HH:mm:ss
+      - name: categories
+        label: 分类
+        label_singular: 分类
+        widget: list
+        required: false
+      - name: tags
+        label: 标签
+        label_singular: 标签
+        widget: list
+        required: false
+      - name: description
+        label: 摘要
+        widget: text
+        required: false
+        hint: 用于首页文章卡片和搜索引擎摘要。
+      - name: featured
+        label: 首页推荐
+        widget: boolean
+        required: false
+        default: false
+      - name: comments
+        label: 开启评论
+        widget: boolean
+        required: false
+      - name: body
+        label: 正文
+        widget: richtext
+
+  - name: english_posts
+    label: English Posts
+    label_singular: English Post
+    description: Create and maintain English articles. Saving publishes through GitHub Actions.
+    icon: translate
+    folder: source/en/posts
+    path: "{{slug}}/index"
+    extension: md
+    format: yaml-frontmatter
+    identifier_field: title
+    slug: "{{slug}}"
+    preview_path: "/en/posts/{{dirname}}/"
+    sortable_fields:
+      - date
+      - title
+      - updated
+    summary: "{{title}} · {{date}}"
+    fields:
+      - name: title
+        label: Title
+        widget: string
+      - name: date
+        label: Published At
+        widget: datetime
+        default: "{{now}}"
+        format: YYYY-MM-DD HH:mm:ss
+      - name: updated
+        label: Updated At
+        widget: datetime
+        required: false
+        format: YYYY-MM-DD HH:mm:ss
+      - name: layout
+        label: Layout
+        widget: hidden
+        default: post
+      - name: lang
+        label: Language
+        widget: hidden
+        default: en
+      - name: translation
+        label: Chinese Version Path
+        widget: string
+        required: false
+        hint: For example /posts/2026/08/my-article/; leave empty if unavailable.
+      - name: type
+        label: Content Type
+        widget: hidden
+        default: english-post
+      - name: categories
+        label: Categories
+        label_singular: Category
+        widget: list
+        required: false
+      - name: tags
+        label: Tags
+        label_singular: Tag
+        widget: list
+        required: false
+      - name: description
+        label: Summary
+        widget: text
+        required: false
+      - name: featured
+        label: Featured
+        widget: boolean
+        required: false
+        default: false
+      - name: comments
+        label: Enable Comments
+        widget: boolean
+        required: false
+        default: false
+      - name: body
+        label: Body
+        widget: richtext
+
+  - name: pages
+    label: 固定页面 / Pages
+    icon: web
+    files:
+      - name: about_zh
+        label: 关于（中文）
+        file: source/about/index.md
+        fields:
+          - { name: title, label: 标题, widget: string }
+          - { name: date, label: 日期, widget: datetime, format: "YYYY-MM-DD HH:mm:ss" }
+          - { name: layout, label: 布局, widget: hidden, default: page }
+          - { name: lang, label: 语言, widget: hidden, default: zh-CN }
+          - { name: translation, label: 英文版本路径, widget: hidden, default: /en/about/ }
+          - { name: description, label: 摘要, widget: text, required: false }
+          - { name: comments, label: 开启评论, widget: boolean, default: false }
+          - { name: body, label: 正文, widget: richtext }
+      - name: about_en
+        label: About (English)
+        file: source/en/about/index.md
+        fields:
+          - { name: title, label: Title, widget: string }
+          - { name: date, label: Date, widget: datetime, format: "YYYY-MM-DD HH:mm:ss" }
+          - { name: layout, label: Layout, widget: hidden, default: page }
+          - { name: lang, label: Language, widget: hidden, default: en }
+          - { name: translation, label: Chinese Version Path, widget: hidden, default: /about/ }
+          - { name: description, label: Summary, widget: text, required: false }
+          - { name: comments, label: Enable Comments, widget: boolean, default: false }
+          - { name: body, label: Body, widget: richtext }

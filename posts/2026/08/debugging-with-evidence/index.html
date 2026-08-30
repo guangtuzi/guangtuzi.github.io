@@ -1,0 +1,208 @@
+<!doctype html>
+<html class="no-js" lang="zh-CN">
+  <head>
+    
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f7f3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101512" media="(prefers-color-scheme: dark)">
+<title>用证据驱动排障：从“可能是”到可验证的结论 · 爆炸糖先生的博客</title>
+<meta name="description" content="一套适用于客户端、服务端和 Web 的排障框架：建立时间线、缩小变量、设计反证，并把临时修复变成长期能力。">
+<link rel="canonical" href="https://www.poppinglab.com/posts/2026/08/debugging-with-evidence/">
+<link rel="alternate" hreflang="zh-CN" href="https://www.poppinglab.com/posts/2026/08/debugging-with-evidence/">
+<link rel="alternate" hreflang="en" href="https://www.poppinglab.com/en/posts/debugging-with-evidence/">
+<link rel="alternate" hreflang="x-default" href="https://www.poppinglab.com/posts/2026/08/debugging-with-evidence/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:title" content="用证据驱动排障：从“可能是”到可验证的结论 · 爆炸糖先生的博客">
+<meta property="og:description" content="一套适用于客户端、服务端和 Web 的排障框架：建立时间线、缩小变量、设计反证，并把临时修复变成长期能力。">
+<meta property="og:url" content="https://www.poppinglab.com/posts/2026/08/debugging-with-evidence/">
+<meta property="og:site_name" content="爆炸糖先生的博客">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="用证据驱动排障：从“可能是”到可验证的结论 · 爆炸糖先生的博客">
+<meta name="twitter:description" content="一套适用于客户端、服务端和 Web 的排障框架：建立时间线、缩小变量、设计反证，并把临时修复变成长期能力。">
+
+<link rel="icon" href="/favicon.svg">
+<link rel="alternate" type="application/atom+xml" title="爆炸糖先生的博客" href="/atom.xml">
+<script>
+  (function () {
+    var root = document.documentElement;
+    root.classList.remove('no-js');
+    root.classList.add('js');
+    try {
+      var saved = localStorage.getItem('terminal-canvas-theme');
+      if (saved === 'light' || saved === 'dark') root.dataset.theme = saved;
+    } catch (_) {}
+  }());
+</script>
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","name":"用证据驱动排障：从“可能是”到可验证的结论 · 爆炸糖先生的博客","headline":"用证据驱动排障：从“可能是”到可验证的结论","description":"一套适用于客户端、服务端和 Web 的排障框架：建立时间线、缩小变量、设计反证，并把临时修复变成长期能力。","url":"https://www.poppinglab.com/posts/2026/08/debugging-with-evidence/","inLanguage":"zh-CN","datePublished":"2026-08-25T13:10:00.000Z","dateModified":"2026-08-25T13:10:00.000Z","author":{"@type":"Person","name":"爆炸糖先生的博客"}}</script>
+
+  <meta name="generator" content="Hexo 8.1.2"></head>
+  <body class="site-body layout-post" id="top">
+    <a class="skip-link" href="#main-content">跳到正文</a>
+    <div class="reading-progress" data-reading-progress aria-hidden="true"></div>
+    
+<header class="site-header" data-site-header>
+  <div class="shell header-inner">
+    <a class="brand" href="/" aria-label="爆炸糖先生的博客，返回首页">
+      <span class="brand-mark" aria-hidden="true"><span>&gt;</span>_</span>
+      <span class="brand-copy">
+        <strong>爆炸糖先生的博客</strong>
+        <span>Software Engineer</span>
+      </span>
+    </a>
+
+    <div class="header-actions">
+      <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="切换配色" title="切换配色">
+        <span class="theme-icon" data-theme-icon aria-hidden="true">◐</span>
+      </button>
+      <button class="icon-button nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-navigation">
+        <span class="sr-only">打开导航</span>
+        <span class="menu-lines" aria-hidden="true"><i></i><i></i></span>
+      </button>
+    </div>
+
+    <nav class="site-nav" id="site-navigation" data-site-nav aria-label="主导航">
+      
+        <a href="/">首页</a>
+      
+        <a href="/archives/">归档</a>
+      
+        <a href="/categories/">分类</a>
+      
+        <a href="/tags/">标签</a>
+      
+        <a href="/about/">关于</a>
+      
+      <a class="language-switch" href="/en/posts/debugging-with-evidence/" lang="en" hreflang="en">EN</a>
+    </nav>
+  </div>
+</header>
+
+
+    <main class="site-main" id="main-content" tabindex="-1">
+      
+<article class="article-page">
+  <header class="article-header shell narrow-shell">
+    <nav class="breadcrumbs" aria-label="面包屑">
+      <a href="/">首页</a><span aria-hidden="true">/</span>
+      <a href="/categories/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/">工程实践</a><span aria-hidden="true">/</span>
+      <span aria-current="page">文章</span>
+    </nav>
+    <a class="article-kicker" href="/categories/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/">工程实践</a>
+    <h1>用证据驱动排障：从“可能是”到可验证的结论</h1>
+    <p class="article-deck">一套适用于客户端、服务端和 Web 的排障框架：建立时间线、缩小变量、设计反证，并把临时修复变成长期能力。</p>
+    <div class="article-meta">
+      <div><span>发布于</span><time datetime="2026-08-25T13:10:00.000Z">2026年8月25日</time></div>
+      
+      <div><span>阅读</span><strong>3 分钟 · 779 字</strong></div>
+    </div>
+  </header>
+
+  <div class="article-rule shell" aria-hidden="true"><span></span><i></i></div>
+
+  <div class="article-layout shell has-toc">
+    <div class="post-content" data-post-content>
+      <p>线上问题最消耗时间的阶段，通常不是修复，而是所有人同时提出解释：可能是网络、可能是缓存、可能是刚上线的版本。每个猜测听起来都合理，但它们没有帮助团队更接近事实。</p>
+<p>有效排障的目标不是尽快证明自己正确，而是用最低成本淘汰错误解释。</p>
+<span id="more"></span>
+
+<h2 id="第一步：把现象写成可以证伪的句子"><a href="#第一步：把现象写成可以证伪的句子" class="headerlink" title="第一步：把现象写成可以证伪的句子"></a>第一步：把现象写成可以证伪的句子</h2><p>“页面很慢”无法直接验证。把它改写成：</p>
+<blockquote>
+<p>版本 3.4.0 中，Android 14 用户首次进入详情页时，P95 可交互时间从 1.2 秒上升到 3.8 秒；二次进入没有明显变化。</p>
+</blockquote>
+<p>这句话给出了版本、平台、触发条件、指标和对照组。范围越清晰，后续需要检查的变量越少。</p>
+<h2 id="第二步：建立统一时间线"><a href="#第二步：建立统一时间线" class="headerlink" title="第二步：建立统一时间线"></a>第二步：建立统一时间线</h2><p>把关键事件放在同一条时间轴上：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><code class="hljs text">10:02  版本开始灰度 5%<br>10:07  API P95 保持稳定<br>10:11  客户端首屏耗时告警<br>10:14  图片 CDN 命中率下降<br>10:18  停止扩大灰度<br></code></pre></td></tr></table></figure>
+
+<p>相关性不是因果，但时间关系可以快速排除不可能的解释。发生在现象之后的变化，不可能是它的起因。</p>
+<h2 id="第三步：一次只改变一个变量"><a href="#第三步：一次只改变一个变量" class="headerlink" title="第三步：一次只改变一个变量"></a>第三步：一次只改变一个变量</h2><p>好的实验会让结果变得有区分度。例如：</p>
+<ul>
+<li>关闭新版本中的图片预取，其他配置不变；</li>
+<li>对同一请求分别使用命中和未命中的 CDN 节点；</li>
+<li>用同一设备对比首次进入和清理缓存后的再次进入。</li>
+</ul>
+<p>如果一次同时回滚三个功能，即使问题消失，也无法知道真正起作用的是哪一个。</p>
+<h2 id="第四步：主动寻找反证"><a href="#第四步：主动寻找反证" class="headerlink" title="第四步：主动寻找反证"></a>第四步：主动寻找反证</h2><p>确定一个假设后，先问：“如果它是错的，我应该看到什么？”</p>
+<p>假设图片解码阻塞主线程，那么低分辨率图片应该显著降低卡顿；如果替换图片后指标完全不变，就应降低这个假设的优先级。反证能避免团队在一个看似顺手的方向上投入过多时间。</p>
+<h2 id="第五步：修复之后补上护栏"><a href="#第五步：修复之后补上护栏" class="headerlink" title="第五步：修复之后补上护栏"></a>第五步：修复之后补上护栏</h2><p>一次故障至少应该留下其中一项长期资产：</p>
+<ul>
+<li>一个覆盖关键路径的自动化测试；</li>
+<li>一项能更早发现变化的指标或告警；</li>
+<li>一段可以重复使用的诊断脚本；</li>
+<li>一份包含触发条件与决策记录的复盘。</li>
+</ul>
+<p>否则，相同问题只是被延期，而不是被解决。</p>
+<h2 id="一张随手可用的检查清单"><a href="#一张随手可用的检查清单" class="headerlink" title="一张随手可用的检查清单"></a>一张随手可用的检查清单</h2><figure class="highlight text"><table><tr><td class="code"><pre><code class="hljs text">[ ] 现象是否包含范围、指标和对照？<br>[ ] 近期变更是否已按时间排列？<br>[ ] 当前实验是否只改变一个变量？<br>[ ] 假设是否有明确的反证条件？<br>[ ] 修复是否解释了全部已知现象？<br>[ ] 是否补上了测试、观测或文档？<br></code></pre></td></tr></table></figure>
+
+<p>排障不是灵感竞赛。它更像一套压缩不确定性的工程流程：每一步都让可能性变少，让证据变多。</p>
+
+    </div>
+    
+      <aside class="toc-panel" aria-label="文章目录">
+        <div class="toc-inner">
+          <span class="toc-title">本文目录</span>
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E6%8A%8A%E7%8E%B0%E8%B1%A1%E5%86%99%E6%88%90%E5%8F%AF%E4%BB%A5%E8%AF%81%E4%BC%AA%E7%9A%84%E5%8F%A5%E5%AD%90"><span class="toc-text">第一步：把现象写成可以证伪的句子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E5%BB%BA%E7%AB%8B%E7%BB%9F%E4%B8%80%E6%97%B6%E9%97%B4%E7%BA%BF"><span class="toc-text">第二步：建立统一时间线</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E4%B8%80%E6%AC%A1%E5%8F%AA%E6%94%B9%E5%8F%98%E4%B8%80%E4%B8%AA%E5%8F%98%E9%87%8F"><span class="toc-text">第三步：一次只改变一个变量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E4%B8%BB%E5%8A%A8%E5%AF%BB%E6%89%BE%E5%8F%8D%E8%AF%81"><span class="toc-text">第四步：主动寻找反证</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5%EF%BC%9A%E4%BF%AE%E5%A4%8D%E4%B9%8B%E5%90%8E%E8%A1%A5%E4%B8%8A%E6%8A%A4%E6%A0%8F"><span class="toc-text">第五步：修复之后补上护栏</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%BC%A0%E9%9A%8F%E6%89%8B%E5%8F%AF%E7%94%A8%E7%9A%84%E6%A3%80%E6%9F%A5%E6%B8%85%E5%8D%95"><span class="toc-text">一张随手可用的检查清单</span></a></li></ol>
+        </div>
+      </aside>
+    
+  </div>
+
+  <footer class="article-footer shell narrow-shell">
+    
+      <div class="tag-row" aria-label="文章标签">
+        <span>TAGGED</span>
+        <a href="/tags/%E8%B0%83%E8%AF%95/">#调试</a><a href="/tags/%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/">#可观测性</a><a href="/tags/%E6%96%B9%E6%B3%95%E8%AE%BA/">#方法论</a>
+      </div>
+    
+    <div class="author-note">
+      <div class="author-monogram" aria-hidden="true">爆</div>
+      <div><span>WRITTEN BY</span><strong>爆炸糖先生的博客</strong><p>记录工程实践、系统设计与持续学习。</p></div>
+    </div>
+
+    
+      <nav class="post-navigation" aria-label="相邻文章">
+        <a href="/posts/2026/08/reproducible-hexo-deployment/" rel="prev"><span>← 上一篇</span><strong>让 Hexo 发布变得可复现：从本地命令到 GitHub Actions</strong></a>
+        
+      </nav>
+    
+  </footer>
+</article>
+
+    </main>
+
+    
+<footer class="site-footer">
+  <div class="shell footer-grid">
+    <div>
+      <a class="footer-brand" href="/">爆炸糖先生的博客</a>
+      <p>Built with Hexo · Ideas stay in motion.</p>
+    </div>
+    
+      <nav class="social-links" aria-label="社交链接">
+        
+          <a href="https://github.com/guangtuzi" target="_blank" rel="me noopener noreferrer">GitHub<span aria-hidden="true">↗</span></a>
+        
+          <a href="mailto:guangtuzi@gmail.com">Email<span aria-hidden="true">↗</span></a>
+        
+      </nav>
+    
+    <div class="footer-meta">
+      <span>© 2026 爆炸糖先生的博客</span>
+      <span class="legal-links">BebiWhy: <a href="/privacy.html">隐私</a><i aria-hidden="true">/</i><a href="/terms.html">条款</a></span>
+      <a href="#top" data-back-top>回到顶部 ↑</a>
+    </div>
+  </div>
+</footer>
+
+    <div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
+    
+<script src="/js/theme.js"></script>
+
+  </body>
+</html>
