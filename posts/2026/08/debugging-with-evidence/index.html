@@ -37,6 +37,8 @@
     } catch (_) {}
   }());
 </script>
+<script defer src="/js/language-core.js"></script>
+<script defer src="/js/language-router.js"></script>
 
 <link rel="stylesheet" href="/css/style.css">
 
@@ -125,7 +127,16 @@
         
           <a href="/about/">关于</a>
         
-        <a class="language-switch" href="/en/posts/debugging-with-evidence/" lang="en" hreflang="en">EN</a>
+        <a
+          class="language-switch"
+          href="/en/posts/debugging-with-evidence/"
+          lang="en"
+          hreflang="en"
+          data-language-switch
+          data-language-current="zh-CN"
+          data-language-target="en"
+          data-language-auto="false"
+        >EN</a>
       </nav>
     </div>
   </div>
