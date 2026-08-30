@@ -9,6 +9,8 @@
   var homePath = english ? '/' : '/zh/';
   var alternatePath = page.translation || (english ? '/zh/' : '/');
   if (!page.translation && !english && /^archives(?:\/|$)/i.test(String(page.path || ''))) alternatePath = '/en/archives/';
+  var currentPath = String(page.path || '').replace(/^\/+/, '');
+  var autoLanguageSwitch = !currentPath || currentPath === 'index.html';
 %>
 <header class="site-header" data-site-header>
   <div class="shell header-inner">
@@ -36,7 +38,16 @@
         <% navItems.forEach(function (item) { var active = nav_active(item.path, page.path); %>
           <a href="<%= url_for(item.path) %>"<% if (active) { %> class="is-active" aria-current="page"<% } %>><%= item.label %></a>
         <% }); %>
-        <a class="language-switch" href="<%= url_for(alternatePath) %>" lang="<%= english ? 'zh-CN' : 'en' %>" hreflang="<%= english ? 'zh-CN' : 'en' %>"><%= english ? '中文' : 'EN' %></a>
+        <a
+          class="language-switch"
+          href="<%= url_for(alternatePath) %>"
+          lang="<%= english ? 'zh-CN' : 'en' %>"
+          hreflang="<%= english ? 'zh-CN' : 'en' %>"
+          data-language-switch
+          data-language-current="<%= english ? 'en' : 'zh-CN' %>"
+          data-language-target="<%= english ? 'zh-CN' : 'en' %>"
+          data-language-auto="<%= autoLanguageSwitch ? 'true' : 'false' %>"
+        ><%= english ? '中文' : 'EN' %></a>
       </nav>
     </div>
   </div>

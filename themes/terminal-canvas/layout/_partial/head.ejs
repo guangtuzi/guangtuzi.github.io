@@ -64,6 +64,8 @@
     } catch (_) {}
   }());
 </script>
+<script defer src="<%= url_for('/js/language-core.js') %>"></script>
+<script defer src="<%= url_for('/js/language-router.js') %>"></script>
 <%- css('css/style.css') %>
 <script type="application/ld+json"><%- JSON.stringify(schema).replace(/</g, '\\u003c') %></script>
 
