@@ -6,14 +6,19 @@
   <body class="site-body layout-<%= page.layout || 'page' %>" id="top">
     <a class="skip-link" href="#main-content"><%= is_english() ? 'Skip to content' : '跳到正文' %></a>
     <div class="reading-progress" data-reading-progress aria-hidden="true"></div>
-    <%- partial('_partial/header') %>
+    <div class="site-frame">
+      <%- partial('_partial/header') %>
+      <div class="site-stage">
+        <main class="site-main" id="main-content" tabindex="-1">
+          <%- body %>
+        </main>
 
-    <main class="site-main" id="main-content" tabindex="-1">
-      <%- body %>
-    </main>
-
-    <%- partial('_partial/footer') %>
+        <%- partial('_partial/footer') %>
+      </div>
+    </div>
     <div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
     <%- js('js/theme.js') %>
+    <%- js('js/search-core.js') %>
+    <%- js('js/search.js') %>
   </body>
 </html>

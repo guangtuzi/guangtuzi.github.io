@@ -8,7 +8,9 @@
     "build": "hexo clean && hexo generate",
     "serve": "hexo server",
     "new": "hexo new",
-    "check": "hexo clean && hexo generate"
+    "check": "hexo clean && hexo generate",
+    "test": "node --test test/*.test.cjs",
+    "verify": "npm test && npm run build"
   },
   "engines": {
     "node": ">=20.19.0"
